@@ -84,6 +84,15 @@ static int _ParseConfigLine(void *dummy, const char *section, const char *name, 
             global_config.dualshock4_productID = (strcmp(value, "true") ? PRODUCT_DUALSHOCK4_1X : PRODUCT_DUALSHOCK4_2X);
             return 1;
         }
+        
+       else if (strcmp(name, "use_dualshock3_clone") == 0)
+        {
+            global_config.dualshock3_productID = (strcmp(value, "true") ? PRODUCT_DUALSHOCK3_1X : PRODUCT_DUALSHOCK3_2X);
+        //    global_config.dualshock3_productID = (strcmp(value, "true") ? PRODUCT_DUALSHOCK3_1X : PRODUCT_DUALSHOCK3_2X);
+            return 1;
+        }
+        
+        
     }
     else
     {
