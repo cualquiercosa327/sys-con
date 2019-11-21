@@ -88,7 +88,7 @@ static int _ParseConfigLine(void *dummy, const char *section, const char *name, 
        else if (strcmp(name, "use_dualshock3_clone") == 0)
         {
             global_config.dualshock3_productID = (strcmp(value, "true") ? PRODUCT_DUALSHOCK3_1X : PRODUCT_DUALSHOCK3_2X);
-            global_config.dualshock3_vendorID = (strcmp(value, "true") ? PRODUCT_DUALSHOCK3_1X : PRODUCT_DUALSHOCK3_2X);
+            global_config.dualshock3_vendorID = (strcmp(value, "true") ? Vendor_DUALSHOCK3_1X : Vendor_DUALSHOCK3_2X);
             return 1;
         }
         
