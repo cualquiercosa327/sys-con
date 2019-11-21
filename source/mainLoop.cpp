@@ -9,7 +9,7 @@
 #include "SwitchAbstractedPadHandler.h"
 #include "configFile.h"
 
-#define APP_VERSION "0.5.0"
+#define APP_VERSION "0.5.1"
 
 struct VendorEvent
 {
@@ -70,6 +70,22 @@ Result CreateDualshock4AvailableEvent(Event &event)
     return rc;
 }
 
+Result CreateDualshock3AvailableEvent(Event &event)
+{
+    UsbHsInterfaceFilter filter;
+    filter.Flags = UsbHsInterfaceFilterFlags_idVendor | UsbHsInterfaceFilterFlags_idProduct;
+    filter.idVendor = _globalConfig.dualshock3_vendorID;
+    filter.idProduct = _globalConfig.dualshock3_productID;
+    Result rc = usbHsCreateInterfaceAvailableEvent(&event, true, 2, &filter);
+    if (R_FAILED(rc))
+        WriteToLog("Failed to open event for Dualshock 3 0x", std::hex, _globalConfig.dualshock3_productID);
+        WriteToLog("Failed to open event for Dualshock 3 0x", std::hex, _globalConfig.dualshock3_vendorID);
+    else
+        WriteToLog("Successfully created event for Dualshock 3 0x", std::hex, _globalConfig.dualshock3_productID);
+        WriteToLog("Successfully created event for Dualshock 3 0x", std::hex, _globalConfig.dualshock3_vendorID);
+    return rc;
+}
+
 Result CallInitHandler()
 {
     if (controllerPtr)
@@ -115,18 +131,18 @@ Result mainLoop()
 
     {
         UsbHsInterfaceFilter filter;
-        //filter.Flags = UsbHsInterfaceFilterFlags_bInterfaceClass | UsbHsInterfaceFilterFlags_bcdDevice_Min;
-        //filter.bInterfaceClass = USB_CLASS_HID;
-        //filter.bcdDevice_Min = 0;
-        filter.Flags = UsbHsInterfaceFilterFlags_idVendor | UsbHsInterfaceFilterFlags_idProduct;
+        
+        /*filter.Flags = UsbHsInterfaceFilterFlags_idVendor | UsbHsInterfaceFilterFlags_idProduct;
         filter.idVendor = VENDOR_SONY;
         filter.idProduct = PRODUCT_DUALSHOCK3;
         rc = usbHsCreateInterfaceAvailableEvent(&ds3Event, true, 0, &filter);
         if (R_FAILED(rc))
             WriteToLog("Failed to open event for Dualshock 3");
         else
-            WriteToLog("Successfully created event for Dualshock 3");
+            WriteToLog("Successfully created event for Dualshock 3"); */
 
+        CreateDualshock3AvailableEvent(ds3Event);
+        
         filter.Flags = UsbHsInterfaceFilterFlags_bcdDevice_Min;
         filter.bcdDevice_Min = 0;
         rc = usbHsCreateInterfaceAvailableEvent(&catchAllEvent, true, 1, &filter);
@@ -308,6 +324,9 @@ Result mainLoop()
                 LoadAllConfigs();
                 usbHsDestroyInterfaceAvailableEvent(&ds4Event, 2);
                 CreateDualshock4AvailableEvent(ds4Event);
+                //new for ds3
+                usbHsDestroyInterfaceAvailableEvent(&ds3Event, 0);
+                CreateDualshock3AvailableEvent(ds3Event);
             }
         }
 
